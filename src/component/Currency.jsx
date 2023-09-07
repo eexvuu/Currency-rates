@@ -3,11 +3,12 @@ import { API } from "../api/Api";
 
 function Currency() {
   const [currency, setCurrency] = useState([]);
+  const [isPending, setIsPending] = useState(true);
   const getData = async () => {
     const response = await fetch(API);
     const data = await response.json();
     setCurrency(data);
-    console.log(data);
+    setIsPending(false);
   };
   useEffect(() => {
     getData();
@@ -23,57 +24,56 @@ function Currency() {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center h-screen bg-orange-500 text-white font-Inter">
-        <div>
-          <table className="border-separate text-xl">
-            <thead className="">
-              <tr>
-                <th>Currency</th>
-                <th>We Buy</th>
-                <th>Exchange Rate</th>
-                <th>We Sell</th>
-              </tr>
-            </thead>
-            <tbody className="text-center">
-              {currency.rates ? (
-                <>
-                  {Object.keys(currency.rates).map((key) => {
-                    return (
-                      <>
-                        <tr key={key}>
-                          <td>{key}</td>
-                          <td>{buyRate(currency.rates[key]).toFixed(4)}</td>
-                          <td>{Number(currency.rates[key]).toFixed(2)}</td>
-                          <td>{sellRate(currency.rates[key]).toFixed(4)}</td>
-                        </tr>
-                      </>
-                    );
-                  })}
-                </>
-              ) : (
-                <>
-                  <div>loading...</div>
-                </>
-              )}
-            </tbody>
-          </table>
+      {isPending && (
+        <div className="flex flex-col justify-center items-center h-screen bg-orange-500 text-white font-Inter text-xl font-bold">
+          Loading...
         </div>
-        <div className="text-center mt-6">
-          <div className="font-bold">Date : {currency.date}</div>
-          <div>Rates are based from 1 {currency.base}</div>
+      )}
+      {!isPending && (
+        <div className="flex flex-col justify-center items-center h-screen bg-orange-500 text-white font-Inter">
           <div>
-            This application uses API from{" "}
-            <a
-              href="http://currencyfreaks.com"
-              className="font-bold"
-              target="_blank"
-              rel="noreferrer"
-            >
-              http://currencyfreaks.com
-            </a>
+            <table className="border-separate text-xl">
+              <thead>
+                <tr>
+                  <th>Currency</th>
+                  <th>We Buy</th>
+                  <th>Exchange Rate</th>
+                  <th>We Sell</th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                {Object.keys(currency.rates).map((key) => {
+                  return (
+                    <>
+                      <tr key={key} className="text-lg">
+                        <td>{key}</td>
+                        <td>{buyRate(currency.rates[key]).toFixed(4)}</td>
+                        <td>{Number(currency.rates[key]).toFixed(2)}</td>
+                        <td>{sellRate(currency.rates[key]).toFixed(4)}</td>
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="text-center mt-6">
+            <div className="font-bold">Date : {currency.date}</div>
+            <div>Rates are based from 1 {currency.base}</div>
+            <div>
+              This application uses API from{" "}
+              <a
+                href="http://currencyfreaks.com"
+                className="font-bold"
+                target="_blank"
+                rel="noreferrer"
+              >
+                http://currencyfreaks.com
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
